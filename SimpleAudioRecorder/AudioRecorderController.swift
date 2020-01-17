@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class AudioRecorderController: UIViewController {
     
@@ -16,6 +17,8 @@ class AudioRecorderController: UIViewController {
     @IBOutlet weak var timeRemainingLabel: UILabel!
     @IBOutlet weak var timeSlider: UISlider!
     @IBOutlet weak var audioVisualizer: AudioVisualizer!
+    
+    var audioPlayer: AVAudioPlayer?
 	
 	private lazy var timeFormatter: DateComponentsFormatter = {
 		let formatting = DateComponentsFormatter()
@@ -30,16 +33,24 @@ class AudioRecorderController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-
         timeLabel.font = UIFont.monospacedDigitSystemFont(ofSize: timeLabel.font.pointSize,
                                                           weight: .regular)
         timeRemainingLabel.font = UIFont.monospacedDigitSystemFont(ofSize: timeRemainingLabel.font.pointSize,
                                                                    weight: .regular)
+        self.loadAudio()
 	}
+    
+    func loadAudio() {
+        let songURL = Bundle.main.url(forResource: "piano", withExtension: "mp3")!
+        
+        audioPlayer = try? AVAudioPlayer(contentsOf: songURL)
+    }
+    
+    // MARK - Actions
 
 
     @IBAction func togglePlayback(_ sender: Any) {
-
+        audioPlayer?.play()
 	}
     
     @IBAction func toggleRecording(_ sender: Any) {
