@@ -46,11 +46,29 @@ class AudioRecorderController: UIViewController {
         audioPlayer = try? AVAudioPlayer(contentsOf: songURL)
     }
     
-    // MARK - Actions
+    // MARK: - Playback
+    
+    var isPlaying: Bool {
+        audioPlayer?.isPlaying ?? false
+    }
+    
+    func play() {
+        audioPlayer?.play()
+    }
+    
+    func pause() {
+        audioPlayer?.pause()
+    }
+    
+    // MARK: - Actions
 
 
     @IBAction func togglePlayback(_ sender: Any) {
-        audioPlayer?.play()
+        if isPlaying {
+            pause()
+        } else {
+            play()
+        }
 	}
     
     @IBAction func toggleRecording(_ sender: Any) {
