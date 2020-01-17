@@ -18,7 +18,15 @@ class AudioRecorderController: UIViewController {
     @IBOutlet weak var timeSlider: UISlider!
     @IBOutlet weak var audioVisualizer: AudioVisualizer!
     
-    var audioPlayer: AVAudioPlayer?
+    var audioPlayer: AVAudioPlayer? {
+        didSet {
+            guard let audioPlayer = audioPlayer else { return }
+            
+            audioPlayer.delegate = self
+        }
+    }
+    
+    weak var timer: Timer?
 	
 	private lazy var timeFormatter: DateComponentsFormatter = {
 		let formatting = DateComponentsFormatter()
@@ -49,6 +57,26 @@ class AudioRecorderController: UIViewController {
     
     func updateViews() {
         playButton.isSelected = isPlaying
+        
+        let elapsedTime = audioPlayer?.currentTime ?? 0
+        self.timeLabel.text = timeFormatter.string(from: elapsedTime)
+    }
+    
+    // MARK: - Timer
+    
+    func cancelTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    func startTimer() {
+
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true
+            , block: { [weak self] (_) in
+                guard let self = self else { return }
+                
+                self.updateViews()
+        })
     }
     
     // MARK: - Playback
@@ -60,11 +88,13 @@ class AudioRecorderController: UIViewController {
     func play() {
         audioPlayer?.play()
         self.updateViews()
+        startTimer()
     }
     
     func pause() {
         audioPlayer?.pause()
         self.updateViews()
+        cancelTimer()
     }
     
     // MARK: - Actions
@@ -79,6 +109,19 @@ class AudioRecorderController: UIViewController {
     
     @IBAction func toggleRecording(_ sender: Any) {
     
+    }
+}
+
+extension AudioRecorderController: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        updateViews()
+        cancelTimer()
+    }
+    
+    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
+        if let error = error {
+            print("Audio Player Error: \(error)")
+        }
     }
 }
 
