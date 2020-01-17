@@ -60,6 +60,10 @@ class AudioRecorderController: UIViewController {
         
         let elapsedTime = audioPlayer?.currentTime ?? 0
         self.timeLabel.text = timeFormatter.string(from: elapsedTime)
+        
+        timeSlider.minimumValue = 0
+        timeSlider.maximumValue = Float(audioPlayer?.duration ?? 0)
+        timeSlider.value = Float(elapsedTime)
     }
     
     // MARK: - Timer
