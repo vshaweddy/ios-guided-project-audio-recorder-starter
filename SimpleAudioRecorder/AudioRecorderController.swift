@@ -38,12 +38,17 @@ class AudioRecorderController: UIViewController {
         timeRemainingLabel.font = UIFont.monospacedDigitSystemFont(ofSize: timeRemainingLabel.font.pointSize,
                                                                    weight: .regular)
         self.loadAudio()
+        self.updateViews()
 	}
     
     func loadAudio() {
         let songURL = Bundle.main.url(forResource: "piano", withExtension: "mp3")!
         
         audioPlayer = try? AVAudioPlayer(contentsOf: songURL)
+    }
+    
+    func updateViews() {
+        playButton.isSelected = isPlaying
     }
     
     // MARK: - Playback
@@ -54,14 +59,15 @@ class AudioRecorderController: UIViewController {
     
     func play() {
         audioPlayer?.play()
+        self.updateViews()
     }
     
     func pause() {
         audioPlayer?.pause()
+        self.updateViews()
     }
     
     // MARK: - Actions
-
 
     @IBAction func togglePlayback(_ sender: Any) {
         if isPlaying {
