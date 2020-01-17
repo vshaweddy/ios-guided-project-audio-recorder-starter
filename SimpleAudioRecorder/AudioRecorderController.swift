@@ -89,13 +89,17 @@ class AudioRecorderController: UIViewController {
     }
     
     func startTimer() {
-
+        
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.03, repeats: true
             , block: { [weak self] (_) in
                 guard let self = self else { return }
                 
                 self.updateViews()
-//                self.audioVisualizer.addValue(decibleValue: self.audioPlayer!.averagePower(forChannel: 0))
+                guard let audioPlayer = self.audioPlayer else { return }
+                
+                // don't forget to add updateMeters before adding averagePower
+                audioPlayer.updateMeters()
+                self.audioVisualizer.addValue(decibleValue: audioPlayer.averagePower(forChannel: 0))
         })
     }
     
