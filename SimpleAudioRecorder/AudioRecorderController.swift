@@ -24,6 +24,7 @@ class AudioRecorderController: UIViewController {
             
             audioPlayer.delegate = self
             audioPlayer.isMeteringEnabled = true
+            self.updateViews()
         }
     }
     
@@ -61,6 +62,11 @@ class AudioRecorderController: UIViewController {
     
     func updateViews() {
         playButton.isSelected = isPlaying
+        recordButton.isSelected = isRecording
+        
+        // enabled and disabled the other button
+        playButton.isEnabled = !isRecording
+        recordButton.isEnabled = !isPlaying
         
         let elapsedTime = audioPlayer?.currentTime ?? 0
         let duration = audioPlayer?.duration ?? 0
@@ -135,11 +141,13 @@ class AudioRecorderController: UIViewController {
         self.audioRecorder = try? AVAudioRecorder(url: file, format: format)
         self.audioRecorder?.delegate = self
         self.audioRecorder?.record()
+        self.updateViews()
     }
     
     func stopRecording() {
         self.audioRecorder?.stop()
         self.audioRecorder = nil
+        self.updateViews()
     }
     
     // MARK: - Actions
@@ -182,6 +190,13 @@ extension AudioRecorderController: AVAudioRecorderDelegate {
             
             // once it's saved, reset it
             self.recordingURL = nil
+            self.updateViews()
+        }
+    }
+    
+    func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
+        if let error = error {
+            print("Audio Recorder Error: \(error)")
         }
     }
 }
